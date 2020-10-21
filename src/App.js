@@ -1,30 +1,37 @@
-import React from 'react';
-import { useQuery } from 'react-query';
-import axios from 'axios';
-import './App.css';
+import React from 'react'
+import { useQuery } from 'react-query'
+import { ReactQueryDevtools } from 'react-query-devtools'
 
-function App() {
-  const queryInfo = useQuery('pokemon', async () => { 
+import axios from 'axios'
+
+function Pokemon() {
+  const queryInfo = useQuery('pokemon', async () => {
     await new Promise(resolve => setTimeout(resolve, 1000))
-
-      if(true) {
-        throw new Error('Testing Error State');
-      }
-
-      axios
+    return axios
       .get('https://pokeapi.co/api/v2/pokemon')
       .then(res => res.data.results)
-    }
-  )
-  console.log(queryInfo);
+  }, {
+    refetchOnWindowFocus: false
+  })
+
   return queryInfo.isLoading ? (
-    'Loading'
-	) : queryInfo.isError ? 
-	queryInfo.error.message : (
-	<div className="App">
-	{queryInfo.data.map(result => <div key={result.name}>{result.name}</div>)}
-	</div>
-  );
+    'Loading...'
+  ) : queryInfo.isError ? (
+    queryInfo.error.message
+  ) : (
+    <div>
+      {queryInfo.data.map(result => {
+        return <div key={result.name}>{result.name}</div>
+      })}
+    </div>
+  )
 }
 
-export default App;
+export default function App() {
+  return (
+    <div>
+      <Pokemon />
+      <ReactQueryDevtools />
+    </div>
+  )
+}
